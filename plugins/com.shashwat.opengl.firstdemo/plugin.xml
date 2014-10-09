@@ -50,7 +50,7 @@
       <editor
             class="com.shashwat.opengl.firstdemo.parts.editor.OpenGLEditor"
             default="false"
-            id="com.shashwat.opengl.firstdemo.editor1"
+            id="com.shashwat.opengl.firstdemo.opengleditor"
             name="OpenGL Editor">
       </editor>
    </extension>

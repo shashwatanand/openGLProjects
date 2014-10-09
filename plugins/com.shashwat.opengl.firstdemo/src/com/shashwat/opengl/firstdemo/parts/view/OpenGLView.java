@@ -22,7 +22,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 
 public class OpenGLView extends ViewPart {
-	final public static String ID = "com.shashwat.opengl.firstdemo.openglview";
+	public final static String ID = "com.shashwat.opengl.firstdemo.openglview";
 
 	/** Holds the OpenGL canvas. */
 	private Composite composite;
