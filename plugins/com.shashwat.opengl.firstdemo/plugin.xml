@@ -38,12 +38,21 @@
    <extension
          point="org.eclipse.ui.views">
       <view
-            class="com.shashwat.opengl.firstdemo.parts.OpenGLView"
+            class="com.shashwat.opengl.firstdemo.parts.view.OpenGLView"
             icon="icons/alt_window16.gif"
             id="com.shashwat.opengl.firstdemo.openglview"
             name="OpenGL View"
             restorable="true">
       </view>
+   </extension>
+   <extension
+         point="org.eclipse.ui.editors">
+      <editor
+            class="com.shashwat.opengl.firstdemo.parts.editor.OpenGLEditor"
+            default="false"
+            id="com.shashwat.opengl.firstdemo.editor1"
+            name="OpenGL Editor">
+      </editor>
    </extension>
 
 </plugin>

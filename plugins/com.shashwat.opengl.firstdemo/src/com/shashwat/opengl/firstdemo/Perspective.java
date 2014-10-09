@@ -3,7 +3,7 @@ package com.shashwat.opengl.firstdemo;
 import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPerspectiveFactory;
 
-import com.shashwat.opengl.firstdemo.parts.OpenGLView;
+import com.shashwat.opengl.firstdemo.parts.view.OpenGLView;
 
 
 public class Perspective implements IPerspectiveFactory {

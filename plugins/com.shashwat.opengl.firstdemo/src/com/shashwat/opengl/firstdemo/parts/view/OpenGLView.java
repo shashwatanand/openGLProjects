@@ -1,4 +1,4 @@
-package com.shashwat.opengl.firstdemo.parts;
+package com.shashwat.opengl.firstdemo.parts.view;
 
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
