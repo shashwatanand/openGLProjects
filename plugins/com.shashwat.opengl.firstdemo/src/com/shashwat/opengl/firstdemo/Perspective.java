@@ -9,7 +9,7 @@ import com.shashwat.opengl.firstdemo.parts.view.OpenGLView;
 public class Perspective implements IPerspectiveFactory {
 
 	public void createInitialLayout(IPageLayout layout) {
-		layout.setEditorAreaVisible(false);
-		layout.addView(OpenGLView.ID, IPageLayout.TOP, IPageLayout.RATIO_MAX, IPageLayout.ID_EDITOR_AREA);
+		layout.setEditorAreaVisible(true);
+		layout.addView(OpenGLView.ID, IPageLayout.LEFT, 0.40f, IPageLayout.ID_EDITOR_AREA);
 	}
 }
