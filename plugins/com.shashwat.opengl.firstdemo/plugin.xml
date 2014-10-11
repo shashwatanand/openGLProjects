@@ -49,6 +49,7 @@
          point="org.eclipse.ui.editors">
       <editor
             class="com.shashwat.opengl.firstdemo.parts.editor.OpenGLEditor"
+            contributorClass="com.shashwat.opengl.firstdemo.parts.editor.OpenGLEditorActionBarContributor"
             default="false"
             id="com.shashwat.opengl.firstdemo.opengleditor"
             name="OpenGL Editor">
