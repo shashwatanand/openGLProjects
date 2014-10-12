@@ -8,6 +8,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.EditorPart;
 
 public class OpenGLEditor extends EditorPart {
+	public final static String ID = "com.shashwat.opengl.firstdemo.opengleditor";
 
 	public OpenGLEditor() {
 		// TODO Auto-generated constructor stub
@@ -28,19 +29,19 @@ public class OpenGLEditor extends EditorPart {
 	@Override
 	public void init(IEditorSite site, IEditorInput input)
 			throws PartInitException {
-		// TODO Auto-generated method stub
-
+		setSite(site);
+		if (input != null) {
+			setInput(input);
+		}
 	}
 
 	@Override
 	public boolean isDirty() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public boolean isSaveAsAllowed() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
