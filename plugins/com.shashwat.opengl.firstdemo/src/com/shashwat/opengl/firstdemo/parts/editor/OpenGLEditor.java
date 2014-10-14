@@ -7,23 +7,24 @@ import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.EditorPart;
 
+import com.shashwat.opengl.firstdemo.parts.editor.model.DataModel;
+
 public class OpenGLEditor extends EditorPart {
 	public final static String ID = "com.shashwat.opengl.firstdemo.opengleditor";
+	private DataModel dataModel;
 
 	public OpenGLEditor() {
-		// TODO Auto-generated constructor stub
+		this.dataModel = new DataModel();
 	}
 
 	@Override
 	public void doSave(IProgressMonitor monitor) {
-		// TODO Auto-generated method stub
-
+		// Nothing
 	}
 
 	@Override
 	public void doSaveAs() {
-		// TODO Auto-generated method stub
-
+		// Nothing
 	}
 
 	@Override
@@ -43,6 +44,11 @@ public class OpenGLEditor extends EditorPart {
 	@Override
 	public boolean isSaveAsAllowed() {
 		return false;
+	}
+	
+	@Override
+	public void dispose() {
+		super.dispose();
 	}
 
 	@Override
