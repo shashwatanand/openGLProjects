@@ -137,6 +137,10 @@ public class OpenGLEditor extends EditorPart {
 			};
 		}).start();
 	}
+	
+	private void render() {
+		
+	}
 
 	@Override
 	public void setFocus() {
