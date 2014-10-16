@@ -141,6 +141,10 @@ public class OpenGLEditor extends EditorPart {
 	private void render() {
 		
 	}
+	
+	protected void setTransformsAndViewport( GL2 gl2 ) {
+		
+	}
 
 	@Override
 	public void setFocus() {
