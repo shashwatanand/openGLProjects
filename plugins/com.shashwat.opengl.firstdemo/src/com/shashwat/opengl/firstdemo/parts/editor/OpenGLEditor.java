@@ -142,7 +142,7 @@ public class OpenGLEditor extends EditorPart {
 		
 	}
 	
-	protected void setTransformsAndViewport( GL2 gl2 ) {
+	protected void setTransformsAndViewport(GL2 gl2) {
 		
 	}
 
