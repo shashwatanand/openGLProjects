@@ -1,9 +1,10 @@
 package com.shashwat.opengl.firstdemo.parts.editor;
 
+import java.util.List;
+
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 import javax.media.opengl.GL2ES1;
-import javax.media.opengl.GL2ES2;
 import javax.media.opengl.GLContext;
 import javax.media.opengl.GLDrawableFactory;
 import javax.media.opengl.GLProfile;
@@ -19,9 +20,12 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.EditorPart;
 
+import com.jogamp.common.nio.Buffers;
 import com.shashwat.opengl.firstdemo.parts.editor.model.DataModel;
+import com.shashwat.opengl.firstdemo.parts.editor.model.ModelObj;
 
 public class OpenGLEditor extends EditorPart {
 	public final static String ID = "com.shashwat.opengl.firstdemo.opengleditor";
@@ -43,6 +47,25 @@ public class OpenGLEditor extends EditorPart {
  
     /** Y distance to translate the viewport by. */
     private float viewTranslateY = 0.0f;
+    
+    /** Ratio of world-space units to screen pixels.
+    * Increasing this zooms the display out,
+    * decreasing it zooms the display in. */
+   private float fObjectUnitsPerPixel = 0.03f;
+
+   /** Index of vertex buffer object. We store interleaved vertex and color data here
+    * like this: x0, r0, y0, g0, z0, b0, x1, r1, y1, g1, z1, b1...
+    * Stored in an array because glGenBuffers requires it. */
+   private int [] vertexBufferIndices = new int [] {-1};
+
+   /** Constant used in FPS calculation. */
+   private static final long MILLISECONDSPERSECOND = 1000;
+
+   /** Number of frames drawn since last FPS calculation. */
+   private int iFPSFrames;
+
+   /** Time in milliseconds at start of FPS calculation interval. */
+   private long lFPSIntervalStartTimeMS;
 
 	public OpenGLEditor() {
 		this.dataModel = new DataModel();
@@ -125,7 +148,7 @@ public class OpenGLEditor extends EditorPart {
 				try {
                     while( (glCanvas != null) && !glCanvas.isDisposed() ) {
                         // if we're running, render in the GUI thread
-                        if( true)
+                        if(true)
                             render();
                         // else we're paused, so sleep for a little so we don't peg the CPU
                         else
@@ -139,10 +162,63 @@ public class OpenGLEditor extends EditorPart {
 	}
 	
 	private void render() {
-		
+		PlatformUI.getWorkbench().getDisplay().syncExec(new Runnable() {
+			@Override
+			public void run() {
+				if ((glCanvas != null) && !glCanvas.isDisposed()) {
+					glCanvas.setCurrent();
+					glContext.makeCurrent();
+					GL2 gl2 = glContext.getGL().getGL2();
+					gl2.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
+					gl2.glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+					
+					int[] noOfVertiecs = createAndFillVertexBuffer(gl2, dataModel.getData());
+					
+					gl2.glColorMaterial(GL.GL_FRONT_AND_BACK, GL2.GL_AMBIENT_AND_DIFFUSE);
+					gl2.glEnable(GL2.GL_COLOR_MATERIAL);
+					
+					gl2.glBindBuffer(GL.GL_ARRAY_BUFFER, vertexBufferIndices[0]);
+					gl2.glEnableClientState(GL2.GL_VERTEX_ARRAY);
+					gl2.glEnableClientState(GL2.GL_COLOR_ARRAY);
+					gl2.glVertexPointer(3, GL.GL_FLOAT, 6 * Buffers.SIZEOF_FLOAT, 0);					
+					gl2.glColorPointer(3, GL.GL_FLOAT, 6 * Buffers.SIZEOF_FLOAT, 3 * Buffers.SIZEOF_FLOAT);
+					gl2.glPolygonMode(GL.GL_FRONT, GL2.GL_FILL);
+					gl2.glDrawArrays(GL2.GL_QUADS, 0, noOfVertiecs[0]);
+					
+					gl2.glBindBuffer(GL.GL_ARRAY_BUFFER, 0);
+					gl2.glDisableClientState(GL2.GL_VERTEX_ARRAY);
+					gl2.glDisableClientState(GL2.GL_COLOR_ARRAY);
+					gl2.glDisable(GL2.GL_COLOR_MATERIAL);
+					
+					glCanvas.swapBuffers();
+					glContext.release();
+					
+					dataModel.incTimeUnit(0.005);
+					
+					calculateAndShowFPS();
+				}
+			}
+		});
 	}
 	
-	protected void setTransformsAndViewport(GL2 gl2) {
+	private void calculateAndShowFPS() {
+		++this.iFPSFrames;
+		long time = System.currentTimeMillis();
+		
+		long timeIntervalMs = time - this.lFPSIntervalStartTimeMS;
+		if (timeIntervalMs >= MILLISECONDSPERSECOND) {
+			this.lFPSIntervalStartTimeMS = time;
+			int fps = (int) ((double) (iFPSFrames * MILLISECONDSPERSECOND) / (double)timeIntervalMs);
+			this.iFPSFrames = 0;
+			getEditorSite().getActionBars().getStatusLineManager().setMessage(String.format("FPS %d", fps)); 
+		}
+	}
+	
+	private int[] createAndFillVertexBuffer(GL2 gl2, List<ModelObj> list) {
+		return new int[0];
+	}
+	
+	private void setTransformsAndViewport(GL2 gl2) {
 		
 	}
 
