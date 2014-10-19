@@ -311,5 +311,4 @@ public class OpenGLEditor extends EditorPart {
 	public void setFocus() {
 		// Nothing
 	}
-
 }
