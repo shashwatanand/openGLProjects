@@ -55,5 +55,12 @@
             name="OpenGL Editor">
       </editor>
    </extension>
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            id="com.shashwat.opengl.firstdemo.parts.editor.RunSuspendAction"
+            name="RunSuspendAction">
+      </command>
+   </extension>
 
 </plugin>
