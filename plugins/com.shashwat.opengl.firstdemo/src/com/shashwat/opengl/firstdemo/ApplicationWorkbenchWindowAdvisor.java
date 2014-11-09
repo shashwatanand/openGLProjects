@@ -23,9 +23,11 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
     
     public void preWindowOpen() {
         IWorkbenchWindowConfigurer configurer = getWindowConfigurer();
+        configurer.setTitle("OpenGL Demo");
         configurer.setInitialSize(new Point(1200, 600));
+        configurer.setShowMenuBar(true);
         configurer.setShowCoolBar(false);
-        configurer.setShowStatusLine(false);
+        configurer.setShowStatusLine(true);
     }
     
     @Override
