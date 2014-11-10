@@ -1,5 +1,6 @@
 package com.shashwat.opengl.firstdemo.parts.editor;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
@@ -15,6 +16,8 @@ import javax.media.opengl.fixedfunc.GLMatrixFunc;
 import javax.media.opengl.glu.GLU;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.bindings.keys.ParseException;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
@@ -30,6 +33,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.EditorPart;
 
 import com.jogamp.common.nio.Buffers;
+import com.shashwat.opengl.firstdemo.Activator;
 import com.shashwat.opengl.firstdemo.parts.editor.model.DataModel;
 import com.shashwat.opengl.firstdemo.parts.editor.model.ModelObj;
 
@@ -94,6 +98,24 @@ public class OpenGLEditor extends EditorPart {
 		if (input != null) {
 			setInput(input);
 		}
+		
+		// create action handlers
+        try {
+            Activator.createKeyBinding(
+                new IAction [] {
+                    site.getActionBars().getGlobalActionHandler( RunSuspendAction.ID ),
+                }, 
+                new String [] {
+                    "Space",
+                },
+                getSite() );
+        }
+        catch( ParseException parseexception ) {
+            throw new PartInitException( parseexception.getMessage() );
+        }
+        catch( IOException ioexception ) {
+            throw new PartInitException( ioexception.getMessage() );
+        }
 	}
 
 	@Override
@@ -152,11 +174,12 @@ public class OpenGLEditor extends EditorPart {
 		
 		(new Thread() {
 			public void run() {
+				RunSuspendAction runSuspendAction = (RunSuspendAction)getEditorSite().getActionBars().getGlobalActionHandler(RunSuspendAction.ID);
 				render();
 				try {
                     while( (glCanvas != null) && !glCanvas.isDisposed() ) {
                         // if we're running, render in the GUI thread
-                        if(true)
+                        if(runSuspendAction.isRunning())
                             render();
                         // else we're paused, so sleep for a little so we don't peg the CPU
                         else
@@ -164,9 +187,22 @@ public class OpenGLEditor extends EditorPart {
                     }
                 } catch( InterruptedException interruptedexception ) {
                     // if sleep interrupted just let the thread quite
-                }
 			};
+			}
 		}).start();
+	}
+	
+	private void calculateAndShowFPS() {
+		++this.iFPSFrames;
+		long time = System.currentTimeMillis();
+		
+		long timeIntervalMs = time - this.lFPSIntervalStartTimeMS;
+		if (timeIntervalMs >= MILLISECONDSPERSECOND) {
+			this.lFPSIntervalStartTimeMS = time;
+			int fps = (int) ((double) (iFPSFrames * MILLISECONDSPERSECOND) / (double)timeIntervalMs);
+			this.iFPSFrames = 0;
+			getEditorSite().getActionBars().getStatusLineManager().setMessage(String.format("FPS %d", fps)); 
+		}
 	}
 	
 	private void render() {
@@ -209,17 +245,24 @@ public class OpenGLEditor extends EditorPart {
 		});
 	}
 	
-	private void calculateAndShowFPS() {
-		++this.iFPSFrames;
-		long time = System.currentTimeMillis();
+	protected void setTransformsAndViewport(GL2 gl2) {
+		Rectangle rectangle = this.glCanvas.getClientArea();
+		int width = rectangle.width;
+		int height = Math.max(rectangle.height, 1);
 		
-		long timeIntervalMs = time - this.lFPSIntervalStartTimeMS;
-		if (timeIntervalMs >= MILLISECONDSPERSECOND) {
-			this.lFPSIntervalStartTimeMS = time;
-			int fps = (int) ((double) (iFPSFrames * MILLISECONDSPERSECOND) / (double)timeIntervalMs);
-			this.iFPSFrames = 0;
-			getEditorSite().getActionBars().getStatusLineManager().setMessage(String.format("FPS %d", fps)); 
-		}
+		gl2.glMatrixMode(GLMatrixFunc.GL_PROJECTION);
+		gl2.glLoadIdentity();
+		
+		GLU glu = new GLU();
+		glu.gluOrtho2D( - (this.fObjectUnitsPerPixel * width) / 2.0f,
+						  (this.fObjectUnitsPerPixel * width) / 2.0f,
+						- (this.fObjectUnitsPerPixel * height) / 2.0f,
+						  (this.fObjectUnitsPerPixel * height) / 2.0f);
+		
+		gl2.glMatrixMode(GLMatrixFunc.GL_MODELVIEW);
+		gl2.glViewport(0, 0, width, height);
+		gl2.glLoadIdentity();
+		gl2.glTranslatef(this.viewTranslateX, this.viewTranslateY, 0.0f);
 	}
 	
 	private int[] createAndFillVertexBuffer(GL2 gl2, List<ModelObj> list) {
@@ -230,7 +273,7 @@ public class OpenGLEditor extends EditorPart {
 					|| !gl2.isFunctionAvailable("glBindBuffer")
 					|| !gl2.isFunctionAvailable("glBufferData")
 					|| !gl2.isFunctionAvailable("glDeleteBuffers")) {
-				System.out.println("Vertex buffer objects not supporte");
+				Activator.openError( "Error", "Vertex buffer objects not supported." );
 			}
 			
 			gl2.glGenBuffers(1, this.vertexBufferIndices, 0);
@@ -270,33 +313,21 @@ public class OpenGLEditor extends EditorPart {
 		floatBuffer.put(obj.getObjColor()[1]);
 		floatBuffer.put(obj.getObjColor()[2]);
 		
-		floatBuffer.put(obj.getObjX());
+		floatBuffer.put(obj.getObjX() + obj.getObjWidth());
 		floatBuffer.put(obj.getObjY() + obj.getObjHeight());
 		floatBuffer.put(0.0f);
 		
 		floatBuffer.put(obj.getObjColor()[0]);
 		floatBuffer.put(obj.getObjColor()[1]);
 		floatBuffer.put(obj.getObjColor()[2]);
-	}
-
-	private void setTransformsAndViewport(GL2 gl2) {
-		Rectangle rectangle = this.glCanvas.getClientArea();
-		int width = rectangle.width;
-		int height = Math.max(rectangle.height, 1);
 		
-		gl2.glMatrixMode(GLMatrixFunc.GL_PROJECTION);
-		gl2.glLoadIdentity();
-		
-		GLU glu = new GLU();
-		glu.gluOrtho2D( - (this.fObjectUnitsPerPixel * width) / 2.0f,
-						  (this.fObjectUnitsPerPixel * width) / 2.0f,
-						- (this.fObjectUnitsPerPixel * height) / 2.0f,
-						  (this.fObjectUnitsPerPixel * height) / 2.0f);
-		
-		gl2.glMatrixMode(GLMatrixFunc.GL_MODELVIEW);
-		gl2.glViewport(0, 0, width, height);
-		gl2.glLoadIdentity();
-		gl2.glTranslatef(this.viewTranslateX, this.viewTranslateY, 0.0f);
+		floatBuffer.put(obj.getObjX());
+		floatBuffer.put(obj.getObjY() + obj.getObjHeight());
+		floatBuffer.put(0.0f);       
+ 
+		floatBuffer.put(obj.getObjColor()[0] );
+		floatBuffer.put(obj.getObjColor()[1] );
+		floatBuffer.put(obj.getObjColor()[2] );
 	}
 
 	private void disposeVertexBuffers() {
