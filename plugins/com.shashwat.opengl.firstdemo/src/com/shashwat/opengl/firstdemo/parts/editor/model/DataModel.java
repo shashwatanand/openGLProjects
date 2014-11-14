@@ -26,11 +26,11 @@ public class DataModel {
 	}
     
     public List<ModelObj> getData() {
-    	double dX = 2.0 * Math.PI * (1 / xIncrements);
+    	double dX = 2.0 * Math.PI * (1.0 / xIncrements);
     	double x = -Math.PI;
     	for( int index = 0; index < xIncrements; x += dX, index++ ) {
-    		ModelObj modelObj = listModelObjs.get(index);
     		double dY = Math.sin(x + dataTimeUnits);
+    		ModelObj modelObj = listModelObjs.get(index);
     		modelObj.setObjX(x);
     		modelObj.setObjY(dY > 0 ? 0 : dY);
     		modelObj.setObjWidth(dX);

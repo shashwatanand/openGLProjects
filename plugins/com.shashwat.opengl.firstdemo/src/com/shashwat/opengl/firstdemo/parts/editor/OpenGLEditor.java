@@ -330,6 +330,7 @@ public class OpenGLEditor extends EditorPart {
 		floatBuffer.put(obj.getObjColor()[2] );
 	}
 
+
 	private void disposeVertexBuffers() {
 		this.glContext.makeCurrent();
 		GL2 gl2 = this.glContext.getGL().getGL2();
