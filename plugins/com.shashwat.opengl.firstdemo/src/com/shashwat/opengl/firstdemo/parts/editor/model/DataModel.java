@@ -26,7 +26,7 @@ public class DataModel {
 	}
     
     public List<ModelObj> getData() {
-    	double dX = 2.0 * Math.PI * (1.0 / xIncrements);
+    	double dX = 2.0 * Math.PI * (2.0 / xIncrements);
     	double x = -Math.PI;
     	for( int index = 0; index < xIncrements; x += dX, index++ ) {
     		double dY = Math.sin(x + dataTimeUnits);

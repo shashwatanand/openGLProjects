@@ -237,7 +237,7 @@ public class OpenGLEditor extends EditorPart {
 					glCanvas.swapBuffers();
 					glContext.release();
 					
-					dataModel.incTimeUnit(0.005);
+					dataModel.incTimeUnit(0.05);
 					
 					calculateAndShowFPS();
 				}
