@@ -73,9 +73,12 @@
       <plugin id="org.eclipse.equinox.app"/>
       <plugin id="org.eclipse.equinox.common"/>
       <plugin id="org.eclipse.equinox.ds"/>
+      <plugin id="org.eclipse.equinox.event"/>
       <plugin id="org.eclipse.equinox.preferences"/>
       <plugin id="org.eclipse.equinox.registry"/>
       <plugin id="org.eclipse.equinox.util"/>
+      <plugin id="org.eclipse.equinox.weaving.hook" fragment="true"/>
+      <plugin id="org.eclipse.fx.osgi" fragment="true"/>
       <plugin id="org.eclipse.help"/>
       <plugin id="org.eclipse.jface"/>
       <plugin id="org.eclipse.jface.databinding"/>
