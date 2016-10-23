@@ -6,7 +6,7 @@ import org.eclipse.ui.IPersistableElement;
 
 public class OpenGLEditorInput implements IEditorInput {
 
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public Object getAdapter(Class adapter) {
 		if (adapter.equals(OpenGLEditorInput.class)) {
